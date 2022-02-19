@@ -1,4 +1,5 @@
-﻿using FastBitmap;
+﻿using BenchmarkDotNet.Running;
+using FastBitmap;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,13 +24,14 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
+         
         }
 
         private async void button1_Click(object sender, EventArgs e)
         {
             Bitmap bmp = (Bitmap)Image.FromFile(path);
             List<Task> tasks = new List<Task>();
-            int threadCount = 7;
+            int threadCount = 8;
             Benchmark.Start();
             var paras = Preprocess(bmp.Height, threadCount);
             var lockBitmap = new PointBitmap(bmp);
@@ -45,6 +47,10 @@ namespace WindowsFormsApp1
             Benchmark.End();
             double seconds = Benchmark.GetSeconds();
             bm2 = lockBitmap;
+            if (bm1 != null && bm2 != null)
+            {
+                var isSame = Benchmark.CompareMemCmp(bm1, bm2);
+            }
             pictureBox1.Image = lockBitmap.source;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             label1.Text = seconds.ToString() + "sec";
@@ -52,12 +58,11 @@ namespace WindowsFormsApp1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            
+            Benchmark.Start();
             Bitmap bmp = (Bitmap)Image.FromFile(path);
+            var lockBitmap = new PointBitmap(bmp);
             int width = bmp.Width;
             int height = bmp.Height;
-            Benchmark.Start();
-            var lockBitmap = new PointBitmap(bmp);
             lockBitmap.LockBits();
             Parallel.For(0, height, y =>
             {
@@ -93,16 +98,19 @@ namespace WindowsFormsApp1
         private List<int> Preprocess(int width, int split)
         {
             int perWidth = (width / split);
+            if (width % split != 0)
+            {
+                perWidth++;
+            }
             int count = 0;
             var result = new List<int>();
-            while(true)
+            while(width > count)
             {
-                if (count + perWidth >= width)
-                {
-                    result.Add(width);
-                    break;
-                }
                 count += perWidth;
+                if (count > width)
+                {
+                    count = width;
+                }
                 result.Add(count);
             }
             return result;
