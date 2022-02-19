@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +16,10 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        string path = Path.Combine
+            (System.IO.Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.FullName ,"temp.bmp");
+        private PointBitmap bm1;
+        private PointBitmap bm2;
         public Form1()
         {
             InitializeComponent();
@@ -20,9 +27,9 @@ namespace WindowsFormsApp1
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            Bitmap bmp = (Bitmap)Image.FromFile(@"C:\Users\sm880\OneDrive\圖片\temp.bmp");
+            Bitmap bmp = (Bitmap)Image.FromFile(path);
             List<Task> tasks = new List<Task>();
-            int threadCount = 2;
+            int threadCount = 7;
             Benchmark.Start();
             var paras = Preprocess(bmp.Height, threadCount);
             var lockBitmap = new PointBitmap(bmp);
@@ -37,17 +44,16 @@ namespace WindowsFormsApp1
             lockBitmap.UnlockBits();
             Benchmark.End();
             double seconds = Benchmark.GetSeconds();
+            bm2 = lockBitmap;
             pictureBox1.Image = lockBitmap.source;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             label1.Text = seconds.ToString() + "sec";
-
         }
-
-       
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Bitmap bmp = (Bitmap)Image.FromFile(@"C:\Users\sm880\OneDrive\圖片\temp.bmp");
+            
+            Bitmap bmp = (Bitmap)Image.FromFile(path);
             int width = bmp.Width;
             int height = bmp.Height;
             Benchmark.Start();
@@ -86,14 +92,14 @@ namespace WindowsFormsApp1
 
         private List<int> Preprocess(int width, int split)
         {
-            int perWidth = (width / split)+1;
+            int perWidth = (width / split);
             int count = 0;
             var result = new List<int>();
             while(true)
             {
                 if (count + perWidth >= width)
                 {
-                    result.Add(width-1);
+                    result.Add(width);
                     break;
                 }
                 count += perWidth;
@@ -103,7 +109,7 @@ namespace WindowsFormsApp1
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            Bitmap bmp = (Bitmap)Image.FromFile(@"C:\Users\sm880\OneDrive\圖片\temp.bmp");
+            Bitmap bmp = (Bitmap)Image.FromFile(path);
             int width = bmp.Width;
             int height = bmp.Height;
             Benchmark.Start();
@@ -121,6 +127,8 @@ namespace WindowsFormsApp1
             lockBitmap.UnlockBits();
             Benchmark.End();
             double seconds = Benchmark.GetSeconds();
+            bm1 = lockBitmap;
+            //RecordPixel(lockBitmap);
             pictureBox1.Image = lockBitmap.source;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             label1.Text = seconds.ToString() + "sec";
