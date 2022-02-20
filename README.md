@@ -1,8 +1,14 @@
 # Parallel Thread Test Result
 
-## Test Method
+## Test Data
+**Width:4098 pixel  
+Height:4177 pixel  
+Bits Per Pixel:24** 
+
 ![image](https://user-images.githubusercontent.com/20869743/154795486-eff783c6-91f0-4ace-8f37-9bfc6920ac53.png) =====>
 ![image](https://user-images.githubusercontent.com/20869743/154795492-aaba6fca-f6db-4eff-9628-7168d731842f.png)
+
+## Test Method
 
 主要測試三種方法
 1. 手動前處理後，切割成N個Thread平行處理
