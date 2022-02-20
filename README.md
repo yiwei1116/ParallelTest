@@ -11,7 +11,7 @@ Bits Per Pixel:24**
 ## Test Method
 
 主要測試三種方法
-1. 手動前處理後，切割成N個Thread平行處理
+1. 前處理後，切割成N個Thread平行處理
 2. 系統自動分派Thread平行處理
 3. 一般執行Main thread處理
 
